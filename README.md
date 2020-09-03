@@ -241,6 +241,23 @@ Set the mode to `enforcing` in `/etc/selinux/config` if you want SELinux to bloc
 processes that are not authorized by one of the policies installed. Restart the
 system and check the new mode is correctly set using `sestatus`.
 
+## Configure Vim
+
+Copy/pasting in vim on Raspberry Pi does not work when highlighting text with
+the mouse cursor. The following configuration fixes this issue (`set mouse=i`)
+and set some preferred options. Add the configuration to `/etc/vim/vimrc.local`
+to apply it to all users or to `~/.vimrc` to apply it to a single user.
+
+    set autoindent
+    set expandtab
+    set mouse=i
+    set shiftwidth=4
+    set tabstop=4
+
+    syntax on
+    set background=dark
+
+This configuration will be effective next time you open a file with `vim`.
 
 <!-- Definitions -->
 
