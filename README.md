@@ -63,12 +63,12 @@ Pi more secure.
 
 ## Install essentials
 
-    sudo apt-get install -y \
+    sudo apt install -y \
         apt-transport-https \
         ca-certificates \
         && sudo update-ca-certificates
 
-    sudo apt-get install -y \
+    sudo apt install -y \
         bash-completion \
         curl \
         git \
@@ -84,28 +84,39 @@ Pi more secure.
 Install and configure UFW (Uncomplicated Firewall) to protect the Pi against
 unauthorized remote connections. Here we only need to open the SSH port (22).
 
-    sudo apt-get install -y ufw
-    sudo ufw status
+    sudo apt install -y ufw
     sudo ufw allow ssh
     sudo ufw enable
+    sudo ufw status
+
+## Change the hostname
+
+Edit the file `/etc/hostname`, the reboot.
 
 ## Build the kernel with SELinux support
 
-First install Git and the build dependencies:
+### Clone the source code
+
+First install Git and the build dependencies.
 
     sudo apt install -y git bc bison flex libssl-dev make libncurses-dev
 
-Next get the sources, which will take some time:
+Next get the source code. This will take some time.
 
     git clone --depth=1 https://github.com/raspberrypi/linux
 
-### Generate default configuration
+### Generate the default configuration
 
 From the folder `linux`, create the Raspberry Pi 4 default build configuration.
 
+    cd linux
     make bcm2711_defconfig
 
-### Human-friendly customization
+> Note: Navigate to the section [Kernel building] of the Raspberry Pi website
+to ensure that `bcm2711_defconfig` is the latest configuration to use for the
+Raspberry Pi 4.
+
+### Customize the configuration
 
 Run `make menuconfig` and use the menu to enable the options listed below.
 
@@ -128,14 +139,13 @@ Also, the networking security option must be enabled:
 ```
 Security options
     [*] Enable different security models
-    [*]   Socket and Networking Security Hooks
+    [*] Socket and Networking Security Hooks
 ```
 
 Now it is possible to select the SELinux option:
 
 ```
 Security options
-    [*] Enable different security models
     [*] NSA SELinux Support
 ```
 
@@ -145,7 +155,6 @@ descriptions on what they do in.
 
 ```
 Security options
-    [*] Enable different security models
     [*] NSA SELinux Support
     [*]   NSA SELinux boot parameter
     [ ]   NSA SELinux runtime disable
@@ -158,60 +167,81 @@ Source: [Linuxtopia: Security - Chapter 9.  Kernel Configuration Recipes][linuxt
 
 ### Building
 
-The command below builds the kernel and generates *.deb packages that are
-convenient to install.
+This command builds the kernel and generates *.deb packages that are convenient
+to install. This operation should takes about one hour on a Raspberry Pi 4. We
+start the building process from a tmux session so that it does not get interrupted
+if the SSH session closes due to inactivity.
 
+    tmux new -s plop
     make deb-pkg -j$(($(nproc)+1))
 
+- Press `Ctrl+B` followed by `D` to detach from a session
+- Run `tmux a -t <session-name>` to attach to a session
+- Press `Ctrl+C` followed by `Ctrl+D` to close a session
+
+Once the kernel has been successfully completed, step back from the current
+directory to find the .deb packages along other build artifacts.
+
+## Install the new kernel
+
+Install the new kernel.
+
+    sudo dpkg -i linux-*.deb
+
+The new kernel image is present in the `/boot` and starts with `vmlinuz-`.
+Update the command below accordingly.
+
+    sudo sh -c "echo 'kernel=vmlinuz-5.4.61-20200902-hardened+' >> /boot/config.txt"
+
+Reboot, then check that the new kernel is correctly installed by printing its name.
+
+    uname -a
+
+The the products of the kernel build, including the .deb packages, can be deleted
+after having successfully installed the kernel.
+
+## Update the kernel
+
+Go to the `linux` folder that includes the source code of the kernel and update it.
+
+    cd linux
+    git pull
+
+Repeat the operations introduced in the above sections to build and install the
+kernel. The configuration of the kernel can be skipped, unless a significant
+amount of time has elapsed since the last time you have configured it. If it is
+the case, then it is recommended to thoroughly clean the folder and reconfigure
+again the kernel build.
+
+    make mrproper
+    make menuconfig
 
 ## Enable SELinux
 
+The kernel installed above include SELinux support. We now need to install the
+SELinux software and enable it.
+
     sudo apt install -y selinux-basics selinux-policy-default auditd
+    sudo sh -c "sed -i '$ s/$/ selinux=1 security=selinux/' /boot/cmdline.txt"
+    sudo touch /.autorelabel
+    sudo reboot
 
+The reboot will take more time than usual as the system needs to update the
+label of all the files. Once connected back to the Raspberry Pi, check that
+SELinux is in permissive mode with
 
-Set mode to `enforcing` in `/etc/selinux/config`, then restart the system.
+    sestatus
 
-## Install Xbox One Controller
+In permissive mode, SELinux does not block process that violates its rules;
+instead violations are simply logged and its up to the user to check the log
+regularly.
 
-### Install xpadneo driver
-
-The recommended way to instal [xpadneo] is as a kernel module that can be installed,
-updated and uninstalled. First, install DKMS (Dynamic Kernel Module Support).
-
-    sudo apt install -y dkms
-
-Then build and install [xpadneo] by following the official instructions.
-
-**Notes**:
-
-> Building [xpadneo] as a kernel modules requires tools available in
-`/usr/src/linux-headers-$(uname -r)/scripts`. Cross-compiling the Linux kernel
-using `deb-pkg` leads the binaries in this folder to be built for the host and
-not for the target architecture. This is a known issue of `deb-pkg`. The binaries
-can be recompiled on the Pi using `sudo make scripts` from the scripts folders.
-Unfortunately, building these scripts on the Pi for a kernel that has been cross-
-compiled may not be easy, and even after successfully building all of them, it
-has been observed that [xpadneo] could not be successfully built due to the
-following error: `/bin/sh: 1: scripts/mod/modpost: Exec format error`. None of
-these issues are met when compiling the Linux kernel on the Pi using `deb-pkg`.
-
-> Another potential issue when install a kernel that has been cross-compiled using
-`deb-pkg` with SELinux support is that SELinux header files are not installed to
-`/usr/src/linux-headers-$(uname -r)/security/selinux`, leading `sudo make scripts`.
-
-TODO: Add note on disabling "ERTP"
-
-### Connect the controller
-
-
-
-
-sudo service bluetooth stop
+For a secure Raspberry Pi, set the mode to `enforcing` in `/etc/selinux/config`,
+then restart the system.
 
 
 <!-- Definitions -->
 
 [Raspberry Pi OS Lite (32-bit)]: https://www.raspberrypi.org/documentation/installation/installing-images/README.md
-[xpadneo]: https://github.com/atar-axis/xpadneo
 [linuxtopia_selinux]: https://www.linuxtopia.org/online_books/linux_kernel/kernel_configuration/ch09s06.html
-
+[Kernel building]: https://www.raspberrypi.org/documentation/linux/kernel/building.md
