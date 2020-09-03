@@ -113,8 +113,8 @@ From the folder `linux`, create the Raspberry Pi 4 default build configuration.
     cd linux
     make bcm2711_defconfig
 
-> Note: Navigate to the section [Kernel building] of the Raspberry Pi website
-to ensure that `bcm2711_defconfig` is the latest configuration to use for the
+> Note: Go to the section [Kernel building] of the Raspberry Pi website
+to check that `bcm2711_defconfig` is the latest configuration to use for the
 Raspberry Pi 4.
 
 ### Customize the configuration
