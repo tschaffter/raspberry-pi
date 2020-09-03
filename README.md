@@ -241,6 +241,7 @@ Set the mode to `enforcing` in `/etc/selinux/config` if you want SELinux to bloc
 processes that are not authorized by one of the policies installed. Restart the
 system and check the new mode is correctly set using `sestatus`.
 
+
 <!-- Definitions -->
 
 [Raspberry Pi OS Lite (32-bit)]: https://www.raspberrypi.org/documentation/installation/installing-images/README.md
