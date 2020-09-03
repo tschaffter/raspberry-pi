@@ -61,6 +61,11 @@ Pi more secure.
 
         sudo deluser -remove-home pi
 
+## Change the hostname
+
+Edit the file `/etc/hostname`. The new hostname will be effective next time the
+system starts.
+
 ## Install essentials
 
     sudo apt install -y \
@@ -88,10 +93,6 @@ unauthorized remote connections. Here we only need to open the SSH port (22).
     sudo ufw allow ssh
     sudo ufw enable
     sudo ufw status
-
-## Change the hostname
-
-Edit the file `/etc/hostname`, the reboot.
 
 ## Build the kernel with SELinux support
 
@@ -236,9 +237,9 @@ In permissive mode, SELinux does not block process that violates its rules;
 instead violations are simply logged and its up to the user to check the log
 regularly.
 
-For a secure Raspberry Pi, set the mode to `enforcing` in `/etc/selinux/config`,
-then restart the system.
-
+Set the mode to `enforcing` in `/etc/selinux/config` if you want SELinux to block
+processes that are not authorized by one of the policies installed. Restart the
+system and check the new mode is correctly set using `sestatus`.
 
 <!-- Definitions -->
 
