@@ -234,7 +234,7 @@ SELinux is in permissive mode with
     sestatus
 
 In permissive mode, SELinux does not block process that violates its rules;
-instead violations are simply logged and its up to the user to check the log
+instead violations are simply logged and it is up to the user to check the log
 regularly.
 
 Set the mode to `enforcing` in `/etc/selinux/config` if you want SELinux to block
