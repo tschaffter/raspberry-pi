@@ -11,7 +11,9 @@
 
 ## Nomenclature
 
-- Host Controller Interface (HCI)
+- BLE - Bluetooth Low Energy
+- GATT - Generic Attribute Protocol
+- HCI - Host Controller Interface
 
 ## Add user to the group bluetooth
 
@@ -188,7 +190,7 @@ formats supported.
 
 We can discover, read, and write characteristics with gatttool. GATT stands for
 Generic Attribute and defines a data structure for organizing characteristics
-and attributes. Launch gatttool in interactive mode.
+and attributes. `gatttool` supports an interactive and non-interactive mode.
 
 ## Update Bluetooth and Logitech Unifying firmwares
 
