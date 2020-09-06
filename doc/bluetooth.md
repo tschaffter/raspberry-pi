@@ -2,8 +2,12 @@
 
 ## Hardware
 
-- Built-in Bluetooth 5.0 of the Raspberry Pi 4 (`hci0`)
-- ASUS USB-BT400 USB Adapter (`hci1`)
+| HCI Device Name | Bluetooth | HCI* |
+| --- | ----------- | --- |
+| Built-in Bluetooth of the Raspberry Pi 4 | 5.0 | `hci0` |
+| ASUS USB-BT400 USB Adapter | 4.0 | `hci1` |
+
+\* These HCI identifiers may be different on your system.
 
 ## Nomenclature
 
@@ -16,6 +20,25 @@ Bluetooth devices. The permissions given to this group are defined in
 `/etc/dbus-1/system.d/bluetooth.conf`.
 
     sudo usermod --append --groups bluetooth $(whoami)
+
+## Check that devices are not blocked
+
+Check that Bluetooth devices are not blocked (should say "no").
+
+    $ rfkill
+    ID TYPE      DEVICE      SOFT      HARD
+    0 wlan      phy0     blocked unblocked
+    1 bluetooth hci0   unblocked unblocked
+    3 bluetooth hci1   unblocked unblocked
+
+If it is blocked, unblock it by ID or TYPE using the commands below.
+
+    sudo rfkill unblock <ID>
+    sudo rfkill unblock <TYPE>
+
+To soft block a device, that is, blocked by software
+
+    sudo rfkill block <ID>
 
 ## Install bluetoothctl
 
@@ -71,6 +94,10 @@ The above command can be used to get the following information:
 - Whether the HCI device is up or down
 - RX and TX stats
 - Bluetooth version
+
+Same as above but returns only the MAC addresses of the devices
+
+    hcitool dev
 
 Turn down/up the HCI device and get its status
 
