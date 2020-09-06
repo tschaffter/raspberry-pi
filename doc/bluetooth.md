@@ -40,6 +40,35 @@ To soft block a device, that is, blocked by software
 
     sudo rfkill block <ID>
 
+## Disable ERTM
+
+The Bluetooth *enhanced retransmission mode (ERTM)* is enabled by default on the
+Raspberry Pi and prevents the Xbox One S controller to connect. From the
+interface of `bluetoothctl` and when ERTM is enabled, attempting to connect to
+the Xbox One S Controller (see next section) should result in the following loop.
+
+    [bluetooth]# connect XX:XX:XX:XX:XX:XX
+    Attempting to connect with XX:XX:XX:XX:XX:XX
+    [CHG] Device XX:XX:XX:XX:XX:XX Connected: yes
+    [CHG] Device XX:XX:XX:XX:XX:XX Connected: no
+    [CHG] Device XX:XX:XX:XX:XX:XX Connected: yes
+    [CHG] Device XX:XX:XX:XX:XX:XX Connected: no
+    ...
+
+ERTM is not needed for our application and can be safely disabled. We can
+temporarily disable ERTM until the next reboot with the first command. The
+second command confirms that ERTM has been successfully disabled.
+
+    $ sudo bash -c 'echo 1 > /sys/module/bluetooth/parameters/disable_ertm'
+    $ cat /sys/module/bluetooth/parameters/disable_ertm
+    Y
+
+If `bluetoothctl` is running when we disabled ERTM, we may need to exit and
+run it again before attempting to connect to the controller. We can use the
+command below to permanently disable ERTM starting from the next reboot.
+
+    sudo bash -c "echo 'options bluetooth disable_ertm=Y' > /etc/modprobe.d/bluetooth.conf"
+
 ## Install bluetoothctl
 
 `bluetoothctl` is the cli tool provided by [BlueZ] to control Bluetooth devices
