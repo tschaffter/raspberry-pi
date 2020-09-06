@@ -3,7 +3,7 @@
 ## Hardware
 
 | HCI Device Name | Bluetooth | HCI* |
-| --- | ----------- | --- |
+| :-- | :---------- | :-- |
 | Built-in Bluetooth of the Raspberry Pi 4 | 5.0 | `hci0` |
 | ASUS USB-BT400 USB Adapter | 4.0 | `hci1` |
 
@@ -90,7 +90,7 @@ List of useful commands, typically types in this order to connect the first
 device.
 
 | Option | Description |
-| --- | ----------- |
+| :-- | :---------- |
 | `help` | Show list of options |
 | `agent on` | Enable agent that manages the Bluetooth 'pairing code' |
 | `scan <on/off>` | Scan for devices |
