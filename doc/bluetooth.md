@@ -75,7 +75,33 @@ Remove device when using `bluetoothctl` before adding it again
     bluetoothctl
         remove XX:XX:XX:XX:XX:XX
 
-## Interact with devices with hciconfig and hcitool
+## Configure devices with bluetoothctl
+
+Start the interactive program `bluetoothctl` as a non-root user.
+
+    bluetoothctl
+
+If the command hangs on first use, make sure that the user is a member of the
+group `bluetooth`.
+
+    groups
+
+List of useful commands, typically types in this order to connect the first
+device.
+
+| Bluetoothctl Option | Description |
+| --- | ----------- |
+| `help` | Show list of options |
+| `agent on` | Enable agent that manages the Bluetooth 'pairing code' |
+| `scan <on/off>` | Scan for devices |
+| `list` | List Bluetooth controllers (`hciX`) |
+| `devices` | Show list of devices that are available, connected or not |
+| `pair <MAC>` | Pair with device |
+| `connect <MAC>` | Connect device |
+| `trust <MAC>` | Trust device so it can automatically connect |
+| `remove <MAC>` | Remove device |
+
+## Configure devices with hciconfig and hcitool
 
 [BlueZ] also provides the following commands that can be used as an alternative
 to the interactive program `bluetoothcl`.
@@ -105,6 +131,14 @@ Turn down/up the HCI device and get its status
     hciconfig hciX down
     hciconfig hciX
 
+Display active connections with remote devices
+
+    hcitool con
+
+Get information from remote device
+
+    hcitool info XX:XX:XX:XX:XX:XX
+
 ## Dump HCI data
 
 Install `hcidump`
@@ -120,6 +154,12 @@ formats supported.
 
     sudo apt install moreutils
     sudo hcidump -i hci0 --hex | ts '%s'
+
+## Discover, read, and write characteristics with gatttool
+
+We can discover, read, and write characteristics with gatttool. GATT stands for
+Generic Attribute and defines a data structure for organizing characteristics
+and attributes. Launch gatttool in interactive mode.
 
 ## Update Bluetooth and Logitech Unifying firmwares
 
