@@ -89,7 +89,7 @@ group `bluetooth`.
 List of useful commands, typically types in this order to connect the first
 device.
 
-| Bluetoothctl Option | Description |
+| Option | Description |
 | --- | ----------- |
 | `help` | Show list of options |
 | `agent on` | Enable agent that manages the Bluetooth 'pairing code' |
